@@ -1,0 +1,76 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+if [ -d ~/.bashrc.d ]; then
+    for rc in ~/.bashrc.d/*; do
+        if [ -f "$rc" ]; then
+            . "$rc"
+        fi
+    done
+fi
+
+# --- Hyprland / config editing ---
+alias hyprconf='micro ~/.config/hypr/hyprland.lua'
+alias hyprreload='hyprctl reload; killall waybar; waybar & disown'
+alias waybarconf='micro ~/.config/waybar/style.css'
+alias waybarr='killall waybar; waybar & disown'
+alias kittyconf='micro ~/.config/kitty/kitty.conf'
+alias woficonf='micro ~/.config/wofi/style.css'
+alias bashrc='micro ~/.bashrc'
+alias bashrcs='source ~/.bashrc'
+alias m='micro'
+
+# --- Wallpaper control ---
+alias wallnext='pkill -f wallpaper-rotate; ~/.local/bin/wallpaper-rotate.sh > /tmp/wallpaper-rotate.log 2>&1 &'
+alias wallstop='pkill -f wallpaper-rotate'
+alias wallconf='micro ~/.local/bin/wallpaper-rotate.sh'
+
+# --- Dotfiles management ---
+alias dotcd='cd ~/dotfiles'
+alias dotpush='cd ~/dotfiles && git add -A && git commit -m "update $(date +%Y-%m-%d_%H:%M)" && git push'
+alias dotpull='cd ~/dotfiles && git pull'
+alias dotstatus='cd ~/dotfiles && git status'
+unset rc
+
+
+dotadd() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Usage: dotadd <package-name> <path-to-real-file>"
+        echo "Example: dotadd rofi ~/.config/rofi/config.rasi"
+        return 1
+    fi
+
+    local pkg="$1"
+    local abs_path
+    abs_path=$(realpath "$2")
+
+    if [[ "$abs_path" != "$HOME"* ]]; then
+        echo "Error: file must be inside your home directory."
+        return 1
+    fi
+
+    local rel_path="${abs_path#$HOME/}"
+    local dest_dir="$HOME/dotfiles/$pkg/$(dirname "$rel_path")"
+
+    mkdir -p "$dest_dir"
+    mv "$abs_path" "$dest_dir/"
+
+    cd "$HOME/dotfiles" && stow "$pkg"
+
+    echo "Added '$rel_path' to package '$pkg' and stowed it."
+    echo "Run 'dotpush' when ready to commit."
+}
