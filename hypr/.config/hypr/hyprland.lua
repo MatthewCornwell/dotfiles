@@ -7,6 +7,7 @@ hl.env("LIBVA_DRIVER_NAME", "nvidia")
 hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
 hl.env("NVD_BACKEND", "direct")
 hl.env("XCURSOR_SIZE", "24")
+hl.env("GTK_THEME", "Adwaita:dark")
 
 hl.config({
   general = {
@@ -35,9 +36,6 @@ hl.config({
 })
 
 hl.on("hyprland.start", function()
-  hl.dispatch(hl.dsp.exec_cmd("hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DISPLAY HYPRLAND_INSTANCE_SIGNATURE"))
-  hl.dispatch(hl.dsp.exec_cmd("systemctl --user start graphical-session-pre.target"))
-  hl.dispatch(hl.dsp.exec_cmd("systemctl --user start graphical-session.target"))
   hl.dispatch(hl.dsp.exec_cmd("waybar"))
   hl.dispatch(hl.dsp.exec_cmd("hypridle"))
   hl.dispatch(hl.dsp.exec_cmd("wl-paste --watch cliphist store"))
@@ -53,7 +51,7 @@ hl.workspace_rule({ workspace = "2", monitor = "DP-1", default = true })
 -- BINDS START --
 
 hl.bind(mainMod .. "+Return", hl.dsp.exec_cmd(terminal))
-hl.bind(mainMod .. "+Q", hl.dsp.window.close())
+hl.bind(mainMod .. "+SHIFT+C", hl.dsp.window.close())
 hl.bind(mainMod .. "+R", hl.dsp.exec_cmd("wofi --show drun"))
 hl.bind(mainMod .. "+F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+V", hl.dsp.window.float({ action = "toggle" }))
