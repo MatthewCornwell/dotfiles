@@ -33,6 +33,8 @@ alias woficonf='micro ~/.config/wofi/style.css'
 alias bashrc='micro ~/.bashrc'
 alias bashrcs='source ~/.bashrc'
 alias m='micro'
+alias temp='cd ~/temp'
+alias tempr='rm ~/temp/*'
 
 # --- Wallpaper control ---
 alias wallnext='pkill -f wallpaper-rotate; ~/.local/bin/wallpaper-rotate.sh > /tmp/wallpaper-rotate.log 2>&1 &'
@@ -44,33 +46,29 @@ alias dotcd='cd ~/dotfiles'
 alias dotpush='cd ~/dotfiles && git add -A && git commit -m "update $(date +%Y-%m-%d_%H:%M)" && git push'
 alias dotpull='cd ~/dotfiles && git pull'
 alias dotstatus='cd ~/dotfiles && git status'
-unset rc
 
+alias apostrophe='flatpak run org.gnome.gitlab.somas.Apostrophe'
 
-dotadd() {
-    if [ -z "$1" ] || [ -z "$2" ]; then
-        echo "Usage: dotadd <package-name> <path-to-real-file>"
-        echo "Example: dotadd rofi ~/.config/rofi/config.rasi"
+snapback() {
+    if [ -z "$1" ]; then
+        echo "Usage: snapback \"description here\""
         return 1
     fi
-
-    local pkg="$1"
-    local abs_path
-    abs_path=$(realpath "$2")
-
-    if [[ "$abs_path" != "$HOME"* ]]; then
-        echo "Error: file must be inside your home directory."
-        return 1
-    fi
-
-    local rel_path="${abs_path#$HOME/}"
-    local dest_dir="$HOME/dotfiles/$pkg/$(dirname "$rel_path")"
-
-    mkdir -p "$dest_dir"
-    mv "$abs_path" "$dest_dir/"
-
-    cd "$HOME/dotfiles" && stow "$pkg"
-
-    echo "Added '$rel_path' to package '$pkg' and stowed it."
-    echo "Run 'dotpush' when ready to commit."
+    sudo snapper -c root create --description "$1"
+    echo "Snapshot created: $1"
 }
+
+snaplist() {
+    sudo snapper -c root list
+}
+
+snapback_rollback() {
+    if [ -z "$1" ]; then
+        echo "Usage: snapback_rollback <snapshot-number>"
+        snaplist
+        return 1
+    fi
+    sudo snapper -c root rollback "$1"
+    echo "Rolled back to snapshot $1 — reboot to complete."
+}
+unset rc
