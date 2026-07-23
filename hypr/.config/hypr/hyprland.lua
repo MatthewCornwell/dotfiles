@@ -50,6 +50,8 @@ hl.workspace_rule({ workspace = "1", monitor = "eDP-1", default = true })
 hl.workspace_rule({ workspace = "2", monitor = "DP-1", default = true })
 -- BINDS START --
 
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+
 hl.bind(mainMod .. "+Return", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. "+SHIFT+C", hl.dsp.window.close())
 hl.bind(mainMod .. "+R", hl.dsp.exec_cmd("wofi --show drun"))

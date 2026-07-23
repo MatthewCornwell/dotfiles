@@ -47,7 +47,16 @@ alias dotpush='cd ~/dotfiles && git add -A && git commit -m "update $(date +%Y-%
 alias dotpull='cd ~/dotfiles && git pull'
 alias dotstatus='cd ~/dotfiles && git status'
 
-alias apostrophe='flatpak run org.gnome.gitlab.somas.Apostrophe'
+#--- CD WORK ----
+
+alias cdweb="cd ~/dev/cdigital/cornwelldigitalweb"
+cdvenv() {
+    cd ~/dev/cdigital/cornwelldigitalweb && source .venv/bin/activate
+}
+
+apostrophe() {
+    flatpak run org.gnome.gitlab.somas.Apostrophe "$@" & disown
+}
 
 snapback() {
     if [ -z "$1" ]; then
@@ -71,4 +80,21 @@ snapback_rollback() {
     sudo snapper -c root rollback "$1"
     echo "Rolled back to snapshot $1 — reboot to complete."
 }
+
+export PATH="$HOME/.config/nvm/versions/node/v24.18.0/bin:$PATH"
+
+# Cheeky scripts for web console
+
+export CD_VPS_HOST=cornwell@51.195.255.86
+export CD_VPS_PATH=/srv/cornwelldigital
+
+updateconsole() {
+  (cd ~/dev/cdigital/cornwelldigitalweb && ./scripts/deploy-console.sh "$@")
+}
+
+
 unset rc
+
+# peon-ping quick controls
+alias peon="bash /home/abraxas/.claude/hooks/peon-ping/peon.sh"
+[ -f /home/abraxas/.claude/hooks/peon-ping/completions.bash ] && source /home/abraxas/.claude/hooks/peon-ping/completions.bash
